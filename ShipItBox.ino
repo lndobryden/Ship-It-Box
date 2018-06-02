@@ -12,28 +12,67 @@
 #include "Keyboard.h"
 #include "Bounce2.h"
 
-const int largeBtnPin = 12;//
-int previousButtonState = LOW;   // for checking the state of a pushButton
-Bounce largeBtn = Bounce();
+#define BLUETOGGLE  A1
+
+class Button {
+  
+  int pin;
+  int previousState;
+  Bounce btn;
+  String offText;
+  String onText;
+
+  public:
+  Button(int _pin, String _offText, String _onText)
+  {
+    pin = _pin;
+    pinMode(pin, INPUT_PULLUP);
+    previousState = LOW;
+    offText = _offText;
+    onText = _onText;
+
+    btn = Bounce();
+    btn.attach(pin);
+    btn.interval(5);
+  }
+
+  void update(int blueToggle) {
+    btn.update();
+    // read the pushbutton:
+    int currentState = btn.read();
+    // if the button state has changed,
+    if ((currentState != previousState) && (currentState == LOW)) {
+      if(blueToggle == LOW) {
+        Keyboard.print(offText);
+      } else {
+        Keyboard.print(onText);
+      }
+    }
+    // save the current button state for comparison next time:
+    previousState = currentState;
+  }
+};
+
+Button largeBtn(12, "Large Button", "Off");
+Button leftRedBtn(6, "Left Red", "Off");
+Button yellowBtn(10, "Yellow", "Off");
+Button whiteBtn(11, "White", "Off");
+Button rightRedBtn(9, "Right Red", "Off");
+
+int blueToggleState;
 
 void setup() {
-  // make the pushButton pin an input:
-  pinMode(largeBtnPin, INPUT_PULLUP);
-  largeBtn.attach(largeBtnPin);
-  largeBtn.interval(5);
-  // initialize control over the keyboard:
+  pinMode(BLUETOGGLE, INPUT_PULLDOWN);
   Keyboard.begin();
 }
 
 void loop() {
-    largeBtn.update();
 
-  // read the pushbutton:
-  int buttonState = largeBtn.read();
-  // if the button state has changed,
-  if ((buttonState != previousButtonState) && (buttonState == LOW)) {
-    Keyboard.print("Hello World!");
-  }
-  // save the current button state for comparison next time:
-  previousButtonState = buttonState;
+  blueToggleState = digitalRead(BLUETOGGLE);
+  
+  largeBtn.update(blueToggleState);
+  leftRedBtn.update(blueToggleState);
+  yellowBtn.update(blueToggleState);
+  whiteBtn.update(blueToggleState);
+  rightRedBtn.update(blueToggleState);
 }

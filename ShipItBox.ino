@@ -17,6 +17,8 @@
 #define BLUETOGGLE  A1
 #define WHITETOGGLE A2
 
+char ctrlKey = KEY_LEFT_CTRL;
+
 class Button {
   
   int pin;
@@ -130,10 +132,10 @@ class LightRing {
 
 Button largeBtn(12, "git push\n", "./gradlew clean build");
 
-char leftRedText[2] = {KEY_LEFT_CTRL, 'C'};
+char leftRedText[2] = {ctrlKey, 'C'};
 Button leftRedBtn(6, "cat /Volumes/keys/id_rsa | ssh-add -t 30 -k -", leftRedText);
 
-char yellowText[2] = {KEY_LEFT_CTRL, 'R'};
+char yellowText[2] = {ctrlKey, 'R'};
 Button yellowBtn(10, "git status", yellowText);
 
 Button whiteBtn(11, "git diff", "Empty");

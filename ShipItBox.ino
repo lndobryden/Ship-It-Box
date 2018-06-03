@@ -9,7 +9,6 @@
  * 1 Feather Ethernet Wing
 */
 
-#include "time.h"
 #include "Keyboard.h"
 #include "Bounce2.h"
 #include "Adafruit_NeoPixel.h"
@@ -46,7 +45,7 @@ class Button {
     int currentState = btn.read();
     // if the button state has changed,
     if ((currentState != previousState) && (currentState == LOW)) {
-      if(blueToggle == LOW) {
+      if(blueToggle == HIGH) {
         Keyboard.print(offText);
       } else {
         Keyboard.print(onText);
@@ -60,26 +59,44 @@ class Button {
 class LightRing {
   
   Adafruit_NeoPixel ring;
-  
+  unsigned long flashInterval;
+
+  int state;
+  unsigned long previousMillis;
+  unsigned long currentMillis;
+
   public:
   LightRing(int _pin)
   {
+    flashInterval = 500UL;
+    state = 0;
+    previousMillis = millis();
     ring = Adafruit_NeoPixel(16, _pin, NEO_RGBW + NEO_KHZ800);
-    ring.begin();
   }
 
   void initialize() {
+    ring.begin();
     ring.setBrightness(75);
-    ring.show();
-  
     ringOn();
   }
 
   void update(int blueToggle) {
     if(blueToggle == HIGH) {
+      flashRing();
+    } else if (state == 0) {
       ringOn();
-    } else {
-      ringOff();
+    }
+  }
+
+  void flashRing() {
+    currentMillis = millis();
+    if (currentMillis - previousMillis >= flashInterval) {
+      previousMillis = currentMillis;
+      if(state == 0) {
+        ringOn();
+      } else {
+        ringOff();
+      }
     }
   }
 
@@ -88,6 +105,7 @@ class LightRing {
       ring.setPixelColor(i, 255, 255, 255, 255);
     }
     ring.show();
+    state = 1;
   }
 
   void ringOff() {
@@ -95,6 +113,7 @@ class LightRing {
       ring.setPixelColor(i, 0, 0, 0, 0);
     }
     ring.show();
+    state = 0;
   }
 };
 
@@ -112,8 +131,7 @@ LightRing ring(NEOPIN);
 void setup() {
 
   pinMode(BLUETOGGLE, INPUT_PULLDOWN);
-  ring.initialize();
-  
+  ring.initialize();  
   Keyboard.begin();
 }
 

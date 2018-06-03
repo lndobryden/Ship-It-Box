@@ -46,13 +46,23 @@ class Button {
     // if the button state has changed,
     if ((currentState != previousState) && (currentState == LOW)) {
       if(blueToggle == HIGH) {
-        Keyboard.print(offText);
+        write(offText);
       } else {
-        Keyboard.print(onText);
+        write(onText);
       }
     }
     // save the current button state for comparison next time:
     previousState = currentState;
+  }
+
+  void write(String text) {
+    if (text.charAt(0) == ctrlKey) {
+      Keyboard.press(text.charAt(0));
+      Keyboard.press(text.charAt(1));
+      Keyboard.releaseAll();
+    } else {
+      Keyboard.println(text);
+    }
   }
 };
 
@@ -118,11 +128,16 @@ class LightRing {
 };
 
 
-Button largeBtn(12, "Large Button", "Off");
-Button leftRedBtn(6, "Left Red", "Off");
-Button yellowBtn(10, "Yellow", "Off");
-Button whiteBtn(11, "White", "Off");
-Button rightRedBtn(9, "Right Red", "Off");
+Button largeBtn(12, "git push\n", "./gradlew clean build");
+
+char leftRedText[2] = {KEY_LEFT_CTRL, 'C'};
+Button leftRedBtn(6, "cat /Volumes/keys/id_rsa | ssh-add -t 30 -k -", leftRedText);
+
+char yellowText[2] = {KEY_LEFT_CTRL, 'R'};
+Button yellowBtn(10, "git status", yellowText);
+
+Button whiteBtn(11, "git diff", "Empty");
+Button rightRedBtn(9, "git add -p", "./gradlew bootRun");
 
 int blueToggleState;
 

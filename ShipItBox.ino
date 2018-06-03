@@ -12,6 +12,8 @@
 #include "Keyboard.h"
 #include "Bounce2.h"
 #include "Adafruit_NeoPixel.h"
+#include <Adafruit_GFX.h>
+#include "Adafruit_LEDBackpack.h"
 
 #define NEOPIN      A0
 #define BLUETOGGLE  A1
@@ -145,11 +147,16 @@ int blueToggleState;
 
 LightRing ring(NEOPIN);
 
-void setup() {
+Adafruit_7segment ledDisplay = Adafruit_7segment();
 
+void setup() {
   pinMode(BLUETOGGLE, INPUT_PULLDOWN);
   ring.initialize();  
   Keyboard.begin();
+  ledDisplay.begin(0x70);
+  ledDisplay.print(0);
+  ledDisplay.writeDisplay();
+
 }
 
 void loop() {
